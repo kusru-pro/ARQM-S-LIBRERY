@@ -1,0 +1,28 @@
+/* Custom scrollbar for a polished look */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-track {
+    background: #faf9f6;
+}
+::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: #94a3b8;
+}
+
+/* Text truncation for reviews */
+.line-clamp-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;  
+    overflow: hidden;
+}
+
+/* 2-Column Grid Overrides for Actual Mobile Screens */
+@media (max-width: 639px) {
+    .mobile-hide-review { display: none !important; }
+    .mobile-hide-tags { display: none !important; }
+}
