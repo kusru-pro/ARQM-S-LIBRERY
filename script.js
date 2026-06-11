@@ -1,7 +1,7 @@
 // Set current year in footer
 document.getElementById('year').textContent = new Date().getFullYear();
 
-// Sample Book Data - You can easily edit this array to add your real books!
+// Sample Book Data
 const books = [
     {
         id: 1,
@@ -199,6 +199,8 @@ let showAllBooks = false;
 // Render books to the grid
 function renderBooks() {
     const grid = document.getElementById('books-grid');
+    if (!grid) return;
+    
     grid.innerHTML = '';
 
     const filteredBooks = currentFilter === 'all' 
@@ -216,10 +218,12 @@ function renderBooks() {
 
     // Hide the button if there are 5 or fewer books total
     const showAllContainer = document.getElementById('show-all-container');
-    if (filteredBooks.length > 5) {
-        showAllContainer.style.display = 'block';
-    } else {
-        showAllContainer.style.display = 'none';
+    if (showAllContainer) {
+        if (filteredBooks.length > 5) {
+            showAllContainer.style.display = 'block';
+        } else {
+            showAllContainer.style.display = 'none';
+        }
     }
 
     booksToDisplay.forEach(book => {
@@ -283,32 +287,32 @@ function setupFilters() {
             
             // Simple animation for the grid
             const grid = document.getElementById('books-grid');
-            grid.style.opacity = '0';
-            setTimeout(() => {
-                renderBooks();
-                grid.style.transition = 'opacity 0.3s ease-in-out';
-                grid.style.opacity = '1';
-            }, 150);
+            if(grid) {
+                grid.style.opacity = '0';
+                setTimeout(() => {
+                    renderBooks();
+                    grid.style.transition = 'opacity 0.3s ease-in-out';
+                    grid.style.opacity = '1';
+                }, 150);
+            }
         });
     });
 }
 
 // Modal Logic
-const modal = document.getElementById('book-modal');
-const modalOverlay = document.getElementById('modal-overlay');
-const modalPanel = document.getElementById('modal-panel');
-
 function toggleShowAll() {
     showAllBooks = !showAllBooks;
     renderBooks();
     
     const btn = document.getElementById('show-all-btn');
-    if (showAllBooks) {
-        btn.innerHTML = 'Show Less <i class="fa-solid fa-chevron-up ml-2"></i>';
-    } else {
-        btn.innerHTML = 'Show All Books <i class="fa-solid fa-chevron-down ml-2"></i>';
-        // Scroll back to the top of the books section
-        document.getElementById('books').scrollIntoView({ behavior: 'smooth' });
+    if (btn) {
+        if (showAllBooks) {
+            btn.innerHTML = 'Show Less <i class="fa-solid fa-chevron-up ml-2"></i>';
+        } else {
+            btn.innerHTML = 'Show All Books <i class="fa-solid fa-chevron-down ml-2"></i>';
+            // Scroll back to the top of the books section
+            document.getElementById('books').scrollIntoView({ behavior: 'smooth' });
+        }
     }
 }
 
@@ -317,6 +321,10 @@ function openModal(bookId) {
     if (!book) return;
 
     currentSelectedBookId = bookId;
+
+    const modal = document.getElementById('book-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalPanel = document.getElementById('modal-panel');
 
     // Populate Data
     document.getElementById('modal-title').textContent = book.title;
@@ -366,6 +374,10 @@ function openModal(bookId) {
 }
 
 function closeModal() {
+    const modal = document.getElementById('book-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    const modalPanel = document.getElementById('modal-panel');
+    
     // Animate out
     modalOverlay.classList.add('opacity-0');
     modalPanel.classList.add('opacity-0', 'scale-95');
@@ -398,24 +410,22 @@ function submitClaim(e) {
     // Simulate success
     document.getElementById('claim-form').classList.add('hidden');
     document.getElementById('success-msg').classList.remove('hidden');
-    
-    // Optionally mark book as claimed in UI temporarily (resets on refresh since no DB)
-    const bookIndex = books.findIndex(b => b.id === currentSelectedBookId);
-    if(bookIndex !== -1) {
-        // books[bookIndex].available = false; 
-        // renderBooks(); // Re-render to show updated badge
-    }
 }
 
-// Close modal on clicking outside the panel
-modal.addEventListener('click', (e) => {
-    if (e.target === modal || e.target === modal.firstElementChild || e.target === modalOverlay) {
-        closeModal();
-    }
-});
-
-// Initialize
+// Initialize and setup event listeners on DOM content loaded
 document.addEventListener('DOMContentLoaded', () => {
     setupFilters();
     renderBooks();
+    
+    // Close modal on clicking outside the panel
+    const modal = document.getElementById('book-modal');
+    const modalOverlay = document.getElementById('modal-overlay');
+    
+    if(modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal || e.target === modal.firstElementChild || e.target === modalOverlay) {
+                closeModal();
+            }
+        });
+    }
 });
